@@ -38,9 +38,12 @@ namespace ch {
             weights.emplace_back(Eigen::MatrixXd::Random(12, 4));
         }
 
+        brain(std::vector<Eigen::MatrixXd> custom_weights) {
+            weights = custom_weights;
+        }
+
         direction calculate_next_move(std::vector<double>& intellisense) {
             Eigen::VectorXd input_layer_sense_in = Eigen::Map<Eigen::Matrix<double, 1, 32>>(intellisense.data());
-            input_layer_sense_in.normalize();
 
             auto input_layer_sense_out = input_layer_sense_in.transpose() * weights[0];
             Eigen::MatrixXd hidden_layer_1_in(input_layer_sense_out.rows(), input_layer_sense_out.cols());
@@ -75,7 +78,31 @@ namespace ch {
             }
         }
 
+        brain operator*(brain const &rhs) {
+            brain res;
+            for (int x = 0; x < weights.size(); x++) {
+                for (int i = 0; i < weights[x].rows(); ++i) {
+                    for (int j = 0; j < weights[x].cols(); ++j) {
+                        float rng = (float) rand() / RAND_MAX;
+                        res.weights[x](i, j) = (rng <= 0.5) ? weights[x](i, j) : rhs.weights[x](i, j);
+                    }
+                }
+            }
+            return res;
+        }
 
+        void mutate() {
+            float mutation_rate = 0.01;
+            for (int x = 0; x < weights.size(); x++) {
+                for (int i = 0; i < weights[x].rows(); ++i) {
+                    for (int j = 0; j < weights[x].cols(); ++j) {
+                        float rng = (float) rand() / RAND_MAX;
+                        double mutatuion_percentage = (2 * (double) rand() / RAND_MAX) - 1;
+                        weights[x](i, j) = (rng <= mutation_rate) ?  mutatuion_percentage : weights[x](i, j);
+                    }
+                }
+            }
+        }
     };
 }
 

@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "src/snake.hpp"
+#include "src/population.hpp"
 
 void draw_boundary(sf::RenderWindow* window) {
     sf::RectangleShape B;
@@ -46,36 +46,15 @@ int main() {
     srand(time(0));
     auto window = new sf::RenderWindow(sf::VideoMode(630, 720), "snakes",sf::Style::Titlebar | sf::Style::Close);
 
-    std::vector<ch::snake> babies(1);
+    ch::population pop(100);
 
     sf::Clock clock;
     sf::Time time;
-
 
     while (window->isOpen()) {
         sf::Event event;
         while (window->pollEvent(event)) {
             switch (event.type) {
-//                case sf::Event::KeyPressed:
-//                    switch (event.key.code) {
-//                        case sf::Keyboard::W:
-//                            if (baby.get_current_direction() != ch::direction::DOWN)
-//                                baby.set_new_direction(ch::direction::UP);
-//                            break;
-//                        case sf::Keyboard::D:
-//                            if (baby.get_current_direction() != ch::direction::LEFT)
-//                                baby.set_new_direction(ch::direction::RIGHT);
-//                            break;
-//                        case sf::Keyboard::S:
-//                            if (baby.get_current_direction() != ch::direction::UP)
-//                                baby.set_new_direction(ch::direction::DOWN);
-//                            break;
-//                        case sf::Keyboard::A:
-//                            if (baby.get_current_direction() != ch::direction::RIGHT)
-//                                baby.set_new_direction(ch::direction::LEFT);
-//                            break;
-//                    }
-//                    break;
                 case sf::Event::Closed:
                     window->close();
                     break;
@@ -83,22 +62,24 @@ int main() {
         }
 
         time = clock.getElapsedTime();
-        if (time.asMilliseconds() >= 100)
+        if (time.asMilliseconds() >= 0.001)
         {
-            window->clear(sf::Color::Black);
-            draw_boundary(window);
-
-            for (auto &item : babies) {
-                item.draw(window);
+            if (pop.all_dead())
+            {
+                pop.natural_selection();
+                pop.mutate();
             }
+            else
+            {
+                window->clear(sf::Color::Black);
+                draw_boundary(window);
 
-            window->display();
+                pop.draw(window);
+                window->display();
+                pop.update();
 
-            for (auto &item : babies) {
-                item.move();
+                clock.restart();
             }
-
-            clock.restart();
         }
     }
 

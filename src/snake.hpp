@@ -20,8 +20,10 @@ namespace ch {
 
         brain snake_brain;
 
+        size_t steps;
         size_t snake_moves;
         size_t score;
+        double fitness_score;
 
         bool isAlive;
 
@@ -67,7 +69,8 @@ namespace ch {
 
             current_direction = direction::DOWN;
             new_direction = direction::DOWN;
-            snake_moves = 1000;
+            snake_moves = 500;
+            steps = 0;
             isAlive = true;
 
             food_location = get_new_food_location();
@@ -79,13 +82,42 @@ namespace ch {
             snake_color = sf::Color(R, G, B, A);
             food_color = sf::Color(R, G, B);
 
-            snake_body.emplace_back(std::pair<int, int>(5,7));
-            snake_body.emplace_back(std::pair<int, int>(5,6));
-            snake_body.emplace_back(std::pair<int, int>(5,5));
+            snake_body.emplace_back(std::pair<int, int>(20,22));
+            snake_body.emplace_back(std::pair<int, int>(20,21));
+            snake_body.emplace_back(std::pair<int, int>(20,20));
+        }
+
+        snake(brain custom_brain) {
+            score = 3;
+
+            current_direction = direction::DOWN;
+            new_direction = direction::DOWN;
+            snake_moves = 500;
+            steps = 0;
+            isAlive = true;
+
+            food_location = get_new_food_location();
+
+            int R = 100 + (155 * ((float) rand() / RAND_MAX));
+            int G = 100 + (155 * ((float) rand() / RAND_MAX));
+            int B = 100 + (155 * ((float) rand() / RAND_MAX));
+            int A = 150;
+            snake_color = sf::Color(R, G, B, A);
+            food_color = sf::Color(R, G, B);
+
+            snake_body.emplace_back(std::pair<int, int>(20,22));
+            snake_body.emplace_back(std::pair<int, int>(20,21));
+            snake_body.emplace_back(std::pair<int, int>(20,20));
+
+            snake_brain = custom_brain;
         }
 
         direction get_current_direction() { return current_direction; }
         void set_new_direction(direction dir) { new_direction = dir; }
+        bool is_alive() { return isAlive; }
+        size_t get_score() { return score; }
+        size_t moves_left() { return snake_moves - steps; }
+        double get_fitness_score() { return fitness_score; }
 
         void draw(sf::RenderWindow* window) {
             sf::RectangleShape tile(sf::Vector2f(15, 15));
@@ -143,19 +175,22 @@ namespace ch {
                     isAlive = false;
                 }
 
-                if (new_head == food_location)
-                {
+                if (new_head == food_location) {
                     score++;
+                    snake_moves += 300;
                     snake_body.insert(snake_body.begin(), new_head);
                     food_location = get_new_food_location();
                 }
-                else
-                {
+                else if (moves_left() == 0) {
+                    isAlive = false;
+                }
+                else {
                     snake_body.insert(snake_body.begin(), new_head);
                     snake_body.pop_back();
                 }
 
                 current_direction = new_direction;
+                steps++;
             }
         }
 
@@ -273,6 +308,18 @@ namespace ch {
             sense.emplace_back(tail.first - tail_1.first > 0 ? 1 : 0);
 
             return sense;
+        }
+
+        void calculate_fitness_score() {
+            fitness_score = steps + (std::pow(2, score) + 500 * std::pow(score, 2.1)) - (std::pow(score, 1.2) * std::pow(0.3 * steps, 1.3));
+        }
+
+        snake operator*(snake const &rhs) {
+            return snake(snake_brain * rhs.snake_brain);
+        }
+
+        void mutate() {
+            snake_brain.mutate();
         }
     };
 }

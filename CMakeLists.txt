@@ -3,7 +3,7 @@ project(charms)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(charms main.cpp src/snake.hpp src/engine.hpp src/brain.hpp src/core.hpp)
+add_executable(charms main.cpp src/snake.hpp src/engine.hpp src/brain.hpp src/core.hpp src/population.hpp)
 
 find_package(SFML 2 REQUIRED graphics)
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
