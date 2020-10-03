@@ -25,7 +25,7 @@ void draw_boundary(sf::RenderWindow* window) {
     window->draw(B);
 }
 
-void draw_intellisense(std::vector<float> intellisense, sf::RenderWindow* window) {
+void draw_intellisense(std::vector<double> intellisense, sf::RenderWindow* window) {
     sf::Text text;
     sf::Font font;
 
@@ -46,7 +46,7 @@ int main() {
     srand(time(0));
     auto window = new sf::RenderWindow(sf::VideoMode(630, 720), "snakes",sf::Style::Titlebar | sf::Style::Close);
 
-    ch::snake baby;
+    std::vector<ch::snake> babies(1);
 
     sf::Clock clock;
     sf::Time time;
@@ -56,26 +56,26 @@ int main() {
         sf::Event event;
         while (window->pollEvent(event)) {
             switch (event.type) {
-                case sf::Event::KeyPressed:
-                    switch (event.key.code) {
-                        case sf::Keyboard::W:
-                            if (baby.get_current_direction() != ch::direction::DOWN)
-                                baby.set_new_direction(ch::direction::UP);
-                            break;
-                        case sf::Keyboard::D:
-                            if (baby.get_current_direction() != ch::direction::LEFT)
-                                baby.set_new_direction(ch::direction::RIGHT);
-                            break;
-                        case sf::Keyboard::S:
-                            if (baby.get_current_direction() != ch::direction::UP)
-                                baby.set_new_direction(ch::direction::DOWN);
-                            break;
-                        case sf::Keyboard::A:
-                            if (baby.get_current_direction() != ch::direction::RIGHT)
-                                baby.set_new_direction(ch::direction::LEFT);
-                            break;
-                    }
-                    break;
+//                case sf::Event::KeyPressed:
+//                    switch (event.key.code) {
+//                        case sf::Keyboard::W:
+//                            if (baby.get_current_direction() != ch::direction::DOWN)
+//                                baby.set_new_direction(ch::direction::UP);
+//                            break;
+//                        case sf::Keyboard::D:
+//                            if (baby.get_current_direction() != ch::direction::LEFT)
+//                                baby.set_new_direction(ch::direction::RIGHT);
+//                            break;
+//                        case sf::Keyboard::S:
+//                            if (baby.get_current_direction() != ch::direction::UP)
+//                                baby.set_new_direction(ch::direction::DOWN);
+//                            break;
+//                        case sf::Keyboard::A:
+//                            if (baby.get_current_direction() != ch::direction::RIGHT)
+//                                baby.set_new_direction(ch::direction::LEFT);
+//                            break;
+//                    }
+//                    break;
                 case sf::Event::Closed:
                     window->close();
                     break;
@@ -83,15 +83,21 @@ int main() {
         }
 
         time = clock.getElapsedTime();
-        if (time.asMilliseconds() >= 1000)
+        if (time.asMilliseconds() >= 100)
         {
             window->clear(sf::Color::Black);
             draw_boundary(window);
-            baby.draw(window);
-            draw_intellisense(baby.intellisense(), window);
+
+            for (auto &item : babies) {
+                item.draw(window);
+            }
+
             window->display();
 
-            baby.move();
+            for (auto &item : babies) {
+                item.move();
+            }
+
             clock.restart();
         }
     }

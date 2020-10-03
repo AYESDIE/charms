@@ -5,20 +5,20 @@
 #ifndef CHARMS_SNAKE_HPP
 #define CHARMS_SNAKE_HPP
 
-#include <iostream>
-#include <vector>
+
 #include <SFML/Graphics.hpp>
-#include <cmath>
+#include "core.hpp"
+#include "brain.hpp"
 
 namespace ch {
-    enum class direction {UP, RIGHT, DOWN, LEFT};
-
     class snake {
     private:
         std::vector<std::pair<int, int>> snake_body;
         std::pair<int, int> food_location;
         sf::Color snake_color;
         sf::Color food_color;
+
+        brain snake_brain;
 
         size_t snake_moves;
         size_t score;
@@ -65,7 +65,7 @@ namespace ch {
         snake() {
             score = 3;
 
-            current_direction = direction::RIGHT;
+            current_direction = direction::DOWN;
             new_direction = direction::DOWN;
             snake_moves = 1000;
             isAlive = true;
@@ -103,6 +103,22 @@ namespace ch {
         void move() {
             if (isAlive) {
                 std::pair<int, int> new_head;
+
+                std::vector<double> sense = intellisense();
+                direction brain_direction = snake_brain.calculate_next_move(sense);
+
+                if (brain_direction == direction::UP && current_direction != direction::DOWN ) {
+                    new_direction = direction::UP;
+                }
+                else if (brain_direction == direction::RIGHT && current_direction != direction::LEFT){
+                    new_direction = direction::RIGHT;
+                }
+                else if (brain_direction == direction::DOWN && current_direction != direction::UP) {
+                    new_direction = direction::DOWN;
+                }
+                else if (brain_direction == direction::LEFT && current_direction != direction::RIGHT) {
+                    new_direction = direction::LEFT;
+                }
 
                 switch (new_direction) {
                     case direction::UP:
@@ -143,8 +159,8 @@ namespace ch {
             }
         }
 
-        std::vector<float> intellisense() {
-            std::vector<float> sense;
+        std::vector<double> intellisense() {
+            std::vector<double> sense;
             auto head = snake_body[0];
 
             // V1
