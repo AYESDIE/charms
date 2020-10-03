@@ -43,7 +43,6 @@ void draw_intellisense(std::vector<double> intellisense, sf::RenderWindow* windo
 }
 
 int main() {
-    srand(time(0));
     auto window = new sf::RenderWindow(sf::VideoMode(630, 720), "snakes",sf::Style::Titlebar | sf::Style::Close);
 
     ch::population pop(500);

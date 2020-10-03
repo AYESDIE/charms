@@ -110,7 +110,7 @@ namespace ch {
         }
 
         snake get_fit_parent_snake() {
-            double rng = fitness_score_sum * (double) rand() / RAND_MAX;
+            auto rng = ch::random_please<double>(0, fitness_score_sum);
             double running_sum = 0;
             for (auto &snake : snakes) {
                 running_sum += snake.get_fitness_score();

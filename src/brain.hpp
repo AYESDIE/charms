@@ -85,7 +85,7 @@ namespace ch {
             for (int x = 0; x < weights.size(); x++) {
                 for (int i = 0; i < weights[x].rows(); ++i) {
                     for (int j = 0; j < weights[x].cols(); ++j) {
-                        float rng = (float) rand() / RAND_MAX;
+                        auto rng = ch::random_please<float>(0, 1);
                         res.weights[x](i, j) = (rng <= 0.5) ? weights[x](i, j) : rhs.weights[x](i, j);
                     }
                 }
@@ -98,8 +98,8 @@ namespace ch {
             for (int x = 0; x < weights.size(); x++) {
                 for (int i = 0; i < weights[x].rows(); ++i) {
                     for (int j = 0; j < weights[x].cols(); ++j) {
-                        float rng = (float) rand() / RAND_MAX;
-                        double mutatuion_percentage = (2 * (double) rand() / RAND_MAX) - 1;
+                        auto rng = ch::random_please<double>(0, 1);
+                        auto mutatuion_percentage = ch::random_please<double>(-1, 1);
                         weights[x](i, j) = (rng <= mutation_rate) ?  mutatuion_percentage : weights[x](i, j);
                     }
                 }
@@ -119,7 +119,7 @@ namespace ch {
                     file << "\n";
                 }
             }
-            
+
             file.close();
         }
     };
