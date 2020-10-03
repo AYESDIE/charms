@@ -46,7 +46,7 @@ int main() {
     srand(time(0));
     auto window = new sf::RenderWindow(sf::VideoMode(630, 720), "snakes",sf::Style::Titlebar | sf::Style::Close);
 
-    ch::population pop(100);
+    ch::population pop(500);
 
     sf::Clock clock;
     sf::Time time;

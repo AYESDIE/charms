@@ -8,6 +8,7 @@
 
 #include <Eigen/Dense>
 #include "core.hpp"
+#include <fstream>
 
 namespace ch {
     Eigen::VectorXd ReLu(const Eigen::MatrixXd& x){
@@ -44,6 +45,7 @@ namespace ch {
 
         direction calculate_next_move(std::vector<double>& intellisense) {
             Eigen::VectorXd input_layer_sense_in = Eigen::Map<Eigen::Matrix<double, 1, 32>>(intellisense.data());
+            input_layer_sense_in.normalize();
 
             auto input_layer_sense_out = input_layer_sense_in.transpose() * weights[0];
             Eigen::MatrixXd hidden_layer_1_in(input_layer_sense_out.rows(), input_layer_sense_out.cols());
@@ -102,6 +104,23 @@ namespace ch {
                     }
                 }
             }
+        }
+
+        void save_brain() {
+            std::ofstream file("best_brain.txt");
+            if (file.is_open())
+            {
+                for (auto &weight : weights) {
+                    for (int i = 0; i < weight.rows(); ++i) {
+                        for (int j = 0; j < weight.cols(); ++j) {
+                            file << weight(i, j) << " ";
+                        }
+                    }
+                    file << "\n";
+                }
+            }
+            
+            file.close();
         }
     };
 }

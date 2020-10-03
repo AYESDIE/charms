@@ -321,6 +321,10 @@ namespace ch {
         void mutate() {
             snake_brain.mutate();
         }
+
+        void save_brain() {
+            snake_brain.save_brain();
+        }
     };
 }
 

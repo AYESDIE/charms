@@ -84,6 +84,8 @@ namespace ch {
 
                 if (snakes[current_baby].get_fitness_score() > best_fitness_score) {
                     best_fitness_score = snakes[current_baby].get_fitness_score();
+
+                    snakes[current_baby].save_brain();
                 }
 
                 current_baby++;
