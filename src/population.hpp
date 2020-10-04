@@ -85,7 +85,7 @@ namespace ch {
                 if (snakes[current_baby].get_fitness_score() > best_fitness_score) {
                     best_fitness_score = snakes[current_baby].get_fitness_score();
 
-                    snakes[current_baby].save_brain();
+                    snakes[current_baby].save_snake();
                 }
 
                 current_baby++;
@@ -110,7 +110,7 @@ namespace ch {
         }
 
         snake get_fit_parent_snake() {
-            auto rng = ch::random_please<double>(0, fitness_score_sum);
+            auto rng = ch::random_uniform<double>(0, fitness_score_sum);
             double running_sum = 0;
             for (auto &snake : snakes) {
                 running_sum += snake.get_fitness_score();
@@ -146,9 +146,9 @@ namespace ch {
             snakes = new_snakes;
         }
 
-        void mutate() {
+        void mutate(double mutation_rate) {
             for (int i = 1; i < snakes.size(); ++i) {
-                snakes[i].mutate();
+                snakes[i].mutate(mutation_rate);
             }
         }
     };

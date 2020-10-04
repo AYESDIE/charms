@@ -37,7 +37,7 @@ void draw_intellisense(std::vector<double> intellisense, sf::RenderWindow* windo
 
     for (int i = 0; i < intellisense.size(); i++) {
         text.setString(std::to_string(int(intellisense[i])));
-        text.setPosition(50 * (i / 3), 670 + 20 * (i % 3));
+        text.setPosition(50 * (i / 3), 700 + 20 * (i % 3));
         window->draw(text);
     }
 }
@@ -45,7 +45,7 @@ void draw_intellisense(std::vector<double> intellisense, sf::RenderWindow* windo
 int main() {
     auto window = new sf::RenderWindow(sf::VideoMode(630, 720), "snakes",sf::Style::Titlebar | sf::Style::Close);
 
-    ch::population pop(500);
+    ch::population pop(100);
 
     sf::Clock clock;
     sf::Time time;
@@ -66,7 +66,7 @@ int main() {
             if (pop.all_dead())
             {
                 pop.natural_selection();
-                pop.mutate();
+                pop.mutate(0.01);
             }
             else
             {
@@ -75,6 +75,7 @@ int main() {
 
                 pop.draw(window);
                 window->display();
+
                 pop.update();
 
                 clock.restart();

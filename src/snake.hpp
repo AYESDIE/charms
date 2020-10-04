@@ -65,11 +65,11 @@ namespace ch {
 
     public:
         snake() {
-            score = 3;
+            score = 1;
 
             current_direction = direction::DOWN;
             new_direction = direction::DOWN;
-            snake_moves = 500;
+            snake_moves = 100;
             steps = 0;
             isAlive = true;
 
@@ -88,11 +88,11 @@ namespace ch {
         }
 
         snake(brain custom_brain) {
-            score = 3;
+            score = 0;
 
             current_direction = direction::DOWN;
             new_direction = direction::DOWN;
-            snake_moves = 500;
+            snake_moves = 100;
             steps = 0;
             isAlive = true;
 
@@ -177,7 +177,7 @@ namespace ch {
 
                 if (new_head == food_location) {
                     score++;
-                    snake_moves += 300;
+                    snake_moves += (score * 100);
                     snake_body.insert(snake_body.begin(), new_head);
                     food_location = get_new_food_location();
                 }
@@ -199,7 +199,7 @@ namespace ch {
             auto head = snake_body[0];
 
             // V1
-            sense.emplace_back(head.second);
+            sense.emplace_back(1 / head.second);
             sense.emplace_back(head.first - food_location.first == 0 && head.second - food_location.second > 0 ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.second - 1; i > 0; i--) {
@@ -211,7 +211,7 @@ namespace ch {
             }
 
             // V2
-            sense.emplace_back(std::min(std::sqrt(2 * std::pow(head.second, 2)), std::sqrt(2 * std::pow(41 - head.first, 2))));
+            sense.emplace_back(1 / std::min(std::sqrt(2 * std::pow(head.second, 2)), std::sqrt(2 * std::pow(41 - head.first, 2))));
             sense.emplace_back(head.first - food_location.first < 0 && head.first - food_location.first == - (head.second - food_location.second) ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.first + 1, j = head.second - 1; i < 41 && j > 0; i++, j--) {
@@ -223,7 +223,7 @@ namespace ch {
             }
 
             // V3
-            sense.emplace_back(41 - head.first);
+            sense.emplace_back(1 / (41 - head.first));
             sense.emplace_back(head.first - food_location.first < 0 && head.second - food_location.second == 0 ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.first + 1; i < 41; i ++) {
@@ -235,7 +235,7 @@ namespace ch {
             }
 
             // V4
-            sense.emplace_back(std::min(std::sqrt(2 * std::pow(41 - head.first, 2)), std::sqrt(2 * std::pow(41 - head.second, 2))));
+            sense.emplace_back(1 / std::min(std::sqrt(2 * std::pow(41 - head.first, 2)), std::sqrt(2 * std::pow(41 - head.second, 2))));
             sense.emplace_back(head.first - food_location.first < 0 && head.first - food_location.first == head.second - food_location.second ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.first + 1, j = head.second + 1; i < 41 && j < 41; i++, j++) {
@@ -247,7 +247,7 @@ namespace ch {
             }
 
             // V5
-            sense.emplace_back(41 - head.second);
+            sense.emplace_back(1 / (41 - head.second));
             sense.emplace_back(head.first - food_location.first == 0 && head.second - food_location.second < 0 ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.second + 1; i < 41; i++) {
@@ -259,7 +259,7 @@ namespace ch {
             }
 
             // V6
-            sense.emplace_back(std::min(std::sqrt(2 * std::pow(41 - head.second, 2)), std::sqrt(2 * std::pow(head.first, 2))));
+            sense.emplace_back(1 / std::min(std::sqrt(2 * std::pow(41 - head.second, 2)), std::sqrt(2 * std::pow(head.first, 2))));
             sense.emplace_back(head.first - food_location.first > 0 && head.first - food_location.first == - (head.second - food_location.second) ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.first - 1, j = head.second + 1; i > 0 && j < 41; i--, j++) {
@@ -271,7 +271,7 @@ namespace ch {
             }
 
             // V7
-            sense.emplace_back(head.first);
+            sense.emplace_back(1 / head.first);
             sense.emplace_back(head.first - food_location.first > 1 && head.second - food_location.second == 0 ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.first - 1; i > 0; i --) {
@@ -283,7 +283,7 @@ namespace ch {
             }
 
             // V8
-            sense.emplace_back(std::min(std::sqrt(2 * std::pow(head.first, 2)), std::sqrt(2 * std::pow(head.second, 2))));
+            sense.emplace_back(1 / std::min(std::sqrt(2 * std::pow(head.first, 2)), std::sqrt(2 * std::pow(head.second, 2))));
             sense.emplace_back(head.first - food_location.first > 0 && head.first - food_location.first == head.second - food_location.second ? 1 : 0);
             sense.emplace_back(0);
             for (int i = head.first - 1, j = head.second - 1; i > 0 && j > 0; i--, j--) {
@@ -311,18 +311,26 @@ namespace ch {
         }
 
         void calculate_fitness_score() {
-            fitness_score = steps + (std::pow(2, score) + 500 * std::pow(score, 2.1)) - (std::pow(score, 1.2) * std::pow(0.3 * steps, 1.3));
+            fitness_score = (10 * std::pow(score, 4.1) / (1 + std::pow(1 + steps, 0.5)));
         }
 
         snake operator*(snake const &rhs) {
             return snake(snake_brain * rhs.snake_brain);
         }
 
-        void mutate() {
-            snake_brain.mutate();
+        void mutate(double mutation_rate) {
+            snake_brain.mutate(mutation_rate);
         }
 
-        void save_brain() {
+        void save_snake() {
+            std::ofstream file("best_snake.txt");
+            if (file.is_open())
+            {
+                file << "Score: " << score << "\n";
+                file << "Fitness Score: " << fitness_score << "\n";
+            }
+
+            file.close();
             snake_brain.save_brain();
         }
     };

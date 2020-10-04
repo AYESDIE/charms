@@ -85,7 +85,7 @@ namespace ch {
             for (int x = 0; x < weights.size(); x++) {
                 for (int i = 0; i < weights[x].rows(); ++i) {
                     for (int j = 0; j < weights[x].cols(); ++j) {
-                        auto rng = ch::random_please<float>(0, 1);
+                        auto rng = ch::random_uniform<double>(0, 1);
                         res.weights[x](i, j) = (rng <= 0.5) ? weights[x](i, j) : rhs.weights[x](i, j);
                     }
                 }
@@ -93,14 +93,21 @@ namespace ch {
             return res;
         }
 
-        void mutate() {
-            float mutation_rate = 0.01;
+        void mutate(double mutation_rate) {
             for (int x = 0; x < weights.size(); x++) {
                 for (int i = 0; i < weights[x].rows(); ++i) {
                     for (int j = 0; j < weights[x].cols(); ++j) {
-                        auto rng = ch::random_please<double>(0, 1);
-                        auto mutatuion_percentage = ch::random_please<double>(-1, 1);
-                        weights[x](i, j) = (rng <= mutation_rate) ?  mutatuion_percentage : weights[x](i, j);
+                        auto rng = ch::random_uniform<double>(0, 1);
+                        if (rng < mutation_rate) {
+                            weights[x](i, j) += ch::random_normal<double>(-1, 1);
+
+                            if (weights[x](i, j) > 1) {
+                                weights[x](i, j) = 1;
+                            }
+                            else if (weights[x](i, j) < -1) {
+                                weights[x](i, j) = -1;
+                            }
+                        }
                     }
                 }
             }
